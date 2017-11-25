@@ -1,0 +1,31 @@
+% Tex program = xelatex
+% software = TexLive 2015
+% 本程序的作用是解决LaTex插图的问题，一是并排插入图片，二是解决图片的标号问题
+% 引用自（http://tieba.baidu.com/p/4582793482）
+\documentclass[a4paper,UTF8]{article}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{caption,subcaption}
+\begin{document}
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[width=1\textwidth]{../Picture/gakki2.jpg}
+    \subcaption*{伤心图}
+  \end{subfigure}
+  \quad
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[width=1\textwidth]{../Picture/gakki2.jpg}
+    \subcaption*{开心图}
+  \end{subfigure}
+  \quad
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[width=1\textwidth]{../Picture/gakki2.jpg}
+    \subcaption*{帅哥图}
+  \end{subfigure}
+  \caption*{都是表情图}
+\end{figure}
+\end{document}
