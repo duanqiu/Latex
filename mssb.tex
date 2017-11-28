@@ -2,6 +2,9 @@
 \title{基于PCA与SVM的人脸识别算法分析}
 \author{戴强}
 \date{\today}
+\usepackage{amsmath}
+\usepackage{listings}
+\lstset{language=Matlab}
 
 \renewenvironment*{abstract}[1]{%
 \newcommand\gjc{#1}
@@ -26,30 +29,78 @@
 
 \tableofcontents
 
-
-\section{前言}
-\label{sec:qianyan}
+\newpage
 
 
 \section{概论}
 
+\subsection{相关的}
 
-
-\subsection{人脸库}
+\subsection{使用的人脸库}
 
 face94人脸图像样本库是Essex大学的彩色人脸图像库，共3060张图像，153个人，每人20张，每张大小均为200x180，图像库中的人脸图像在人脸位置、光照和表情方面有一定的变化，其中一些人戴着眼镜或留有胡须。
+500个人脸样本 识别率为99\%。
 
 ORL人脸库是由Ohvcrtti实验室拍摄的一系列人脸图像组成，它是一个美国的专门从事人脸图像研究的实验室，该数据库内共有40个不同年龄、不同性别和．不同种族的对象，每个对象1 O幅图像。这里面的人脸图像不是彩色的，二是灰度图像，尺寸为11 2×92，背景为灰色。它的人脸部分表情和细节都是不同的而且是要求变化的，比如哭与不哭，有没有头发，有没有戴帽子等等，同时，人脸姿态也有变化，人脸的尺寸也有最多1 0％的变化。
+200个人脸样本 识别率为83.5\%。
+
+
+Yale耶鲁人脸库，该数据库包含15人每人11幅人脸像，其图像差异在于变化的人脸表情，是否戴有眼镜，不同的光照条件等。该库的特点就是光照变化显著，且有面部部分遮掩。在Yale人脸库中包含15个人的165幅图像
+
+75个人脸样本 识别率85.333\%.
+
 
 本项目分别使用两种人脸库来进行比较分析。
 
+\subsection{本文大致安排}
+
+
+
 \section{算法分析}
 
+\subsection{PCA降维}
+
+\subsubsection{训练样本归一化}
+
+将图片的二维像素展开成一维行向量，所有测试图片累加，组成$M*N$的向量，其中M表示图片的个数，N表示一副图片的像素点个数
+\[
+\begin{bmatrix}
+A_{11} & A_{12} & \ldots & A_{1n}\\
+Ax_{21} & A_{22} & \ldots & Ax_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+A_{m1} & A_{m2} & \ldots & A_{mn}\\
+\end{bmatrix}
+\]
+
+然后得到每个相应位置的像素点均值与方差，进行归一化，matlab的代码实现如下：
+
+\begin{lstlisting}
+A_mean = mean(A);
+A_norm = (A-repmat(A_mean, m, 1));
+A_sigma= std(A_norm)
+A_norm = A_norm./A_sigma
+\end{lstlisting}
+
+\subsubsection{提取特征值}
+
+根据PCA的算法要求，我们要求$A^T*A$的最大几个特征值的特征特征向量。用face94人脸库时，此时的矩阵$A$规模为153*36000。则我们要求的关联矩阵$A^T*A$的规模为36000*36000，这是一个非常大的计算量。因此先求$A*A^T$的最大几个特征值的特征特征向量（此时的矩阵规模为153*153），然后用求得的特征向量去乘以$A^T$。下面是相关证明：
+
+1)$A^T*A$与$A*A^T$具有相同的秩:
+
+若$A*x=0$,则$A^TA*x=0, x^TA^\mathrm{T}A*x=0 $
+
+\quad
+2)$A^T*A$与$A*A^T$具有相同的秩:
+
+\quad
+3)若$A*A^T$有特征向量$x$,且相应的特征值为$\lambda$,那么$A^Tx$为$A^T*A$的特征向量，并且相应的特征值同为$\lambda$:
+
 \section{程序实现}
-\label{sec:shixian}
 
 \section{结果分析}
-\label{sec:jieguofenxi}
+
+
+
 
 
 
