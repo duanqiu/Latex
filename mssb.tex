@@ -1,11 +1,13 @@
-\documentclass{ctexart}
+\documentclass[a4paper,12pt]{ctexart}
 \title{基于PCA与SVM的人脸识别算法分析}
 \author{戴强}
 \date{\today}
 \usepackage{amsmath}
 \usepackage{listings}
 \lstset{language=Matlab}
-
+\usepackage{graphicx}
+\usepackage{caption,subcaption}
+\usepackage[top=1.25in,bottom=1in,left=1.25in,right=1.25in]{geometry}
 \renewenvironment*{abstract}[1]{%
 \newcommand\gjc{#1}
 \paragraph{摘要}
@@ -27,38 +29,69 @@
 
 \newpage
 
+
 \tableofcontents
 
 \newpage
 
 
 \section{概论}
+由于PCA在特征提取方面的有效性以及SVM在处理小样本问题泛化能力强等方面的优势，PCA提取数据然后使用SVM进行分类是一种非常经典的人脸识别算法。本设计算法是对其的实现并用不同的人脸库进行人脸识别，来评估该算法的性能，并通过不同的人脸库来探究不同的图片数据库对人脸识别的新能的影响。
 
-\subsection{相关的}
+\subsection{程序流程图}
+该算法分为两部分：
 
-\subsection{使用的人脸库}
+1) 用数据来对程序进行训练，得到相应参数，其流程如图\ref{fig:lct:train}
 
-face94人脸图像样本库是Essex大学的彩色人脸图像库，共3060张图像，153个人，每人20张，每张大小均为200x180，图像库中的人脸图像在人脸位置、光照和表情方面有一定的变化，其中一些人戴着眼镜或留有胡须。
-500个人脸样本 识别率为99\%。
+2) 用训练好的参数进行人脸识别，相应流程图如图\ref{fig:lct:test}
+\begin{figure}[htb]
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=1in]{../Picture/PM_train.jpg}
+\caption{数据训练流程图}
+\label{fig:lct:train}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=1in]{../Picture/PM_test.jpg}
+\caption{数据分类流程图}
+\label{fig:lct:test}
+\end{minipage}
+\end{figure}
 
-ORL人脸库是由Ohvcrtti实验室拍摄的一系列人脸图像组成，它是一个美国的专门从事人脸图像研究的实验室，该数据库内共有40个不同年龄、不同性别和．不同种族的对象，每个对象1 O幅图像。这里面的人脸图像不是彩色的，二是灰度图像，尺寸为11 2×92，背景为灰色。它的人脸部分表情和细节都是不同的而且是要求变化的，比如哭与不哭，有没有头发，有没有戴帽子等等，同时，人脸姿态也有变化，人脸的尺寸也有最多1 0％的变化。
-200个人脸样本 识别率为83.5\%。
+\subsection{人脸库}
+
+本实验使用了3种人脸库来进行人脸识别，它们分别为：
+
+1)\quad face94人脸图像样本库是Essex大学的彩色人脸图像库，共3060张图像，153个人，每人20张，每张大小均为200x180，图像库中的人脸图像在人脸位置、光照和表情方面有一定的变化，其中一些人戴着眼镜或留有胡须。
+%500个人脸样本 识别率为99\%。
+
+2)\quad ORL人脸库是由Ohvcrtti实验室拍摄的一系列人脸图像组成，它是一个美国的专门从事人脸图像研究的实验室，该数据库内共有40个不同年龄、不同性别和．不同种族的对象，每个对象1O幅图像。这里面的人脸图像是灰度图像，尺寸为112×92，背景为灰色。它的人脸部分表情和细节都是不同的而且是要求变化的，比如哭与不哭，有没有头发，有没有戴帽子等等，同时，人脸姿态也有变化，人脸的尺寸也有最多10％的变化。
+%200个人脸样本 识别率为83.5\%。
 
 
-Yale耶鲁人脸库，该数据库包含15人每人11幅人脸像，其图像差异在于变化的人脸表情，是否戴有眼镜，不同的光照条件等。该库的特点就是光照变化显著，且有面部部分遮掩。在Yale人脸库中包含15个人的165幅图像
+3)\quad Yale人脸库，该数据库包含15人每人11幅人脸像，其图像差异在于变化的人脸表情，是否戴有眼镜，不同的光照条件等。该库的特点就是光照变化显著，且有面部部分遮掩。在Yale人脸库中包含15个人的165幅图像
 
-75个人脸样本 识别率85.333\%.
+%75个人脸样本 识别率85.333\%.
 
+\subsection{论文结构}
+本论文共分为4章
 
-本项目分别使用两种人脸库来进行比较分析。
+第一章为概要，对算法进行大体的流程图进行展示，并介绍所使用的人脸库，并对论文的总体结构进行讲述。
 
-\subsection{本文大致安排}
+第二章为算法分析与实现，先对PCA算法的部分细节进行讲述，以及论述SVM在多分类情形的结构构建。
 
+第三章为结果分析，对结果进行展示。并比较该程序在不同的人脸库下的表现并进行分析。
 
+第四章为总结，对所做的工作进行总结，并阐述了下一步的研究工作。
 
-\section{算法分析}
+\newpage
+\section{算法分析与实现}
 
 \subsection{PCA降维}
+PCA是一种经典的特征提取及数据表示方法，被广泛用于模式识别领域和计算机视觉领域。
+
+由于人脸图像样本的维数很高，若直接对人脸图像进行处理则计算量很大并且运算时间很长，所以近年来，很多人脸检测人脸识别算法都首先采用PCA方法进行降维，然后再采用其他方法进行进一步处理。
 
 \subsubsection{训练样本归一化}
 
@@ -78,32 +111,100 @@ A_{m1} & A_{m2} & \ldots & A_{mn}\\
 A_mean = mean(A);
 A_norm = (A-repmat(A_mean, m, 1));
 A_sigma= std(A_norm)
-A_norm = A_norm./A_sigma
+A_norm = A_norm.repmat(A_sigma, m, 1)
 \end{lstlisting}
 
 \subsubsection{提取特征值}
 
-根据PCA的算法要求，我们要求$A^T*A$的最大几个特征值的特征特征向量。用face94人脸库时，此时的矩阵$A$规模为153*36000。则我们要求的关联矩阵$A^T*A$的规模为36000*36000，这是一个非常大的计算量。因此先求$A*A^T$的最大几个特征值的特征特征向量（此时的矩阵规模为153*153），然后用求得的特征向量去乘以$A^T$。下面是相关证明：
+根据PCA的算法要求，我们要求$A^\mathrm{T}*A$的最大几个特征值的特征向量。用face94人脸库时，此时的矩阵$A$规模为153*36000。则我们要求的关联矩阵$A^\mathrm{T}*A$的规模为36000*36000，这是一个非常大的计算量。因此先求$A*A^\mathrm{T}$的最大几个特征值的特征特征向量（此时的矩阵规模为153*153），然后用求得的特征向量去乘以$A^\mathrm{T}$，同样可得到$A^\mathrm{T}*A$的最大几个特征值的特征向量。下面是相关证明：
 
-1)$A^T*A$与$A*A^T$具有相同的秩:
+1)$A^\mathrm{T}A$与$AA^\mathrm{T}$具有相同的秩:
 
-若$A*x=0$,则$A^TA*x=0, x^TA^\mathrm{T}A*x=0 $
+若$Ax=0$\quad $\Longrightarrow$ \quad$A^\mathrm{T}Ax=0 $
 
-\quad
-2)$A^T*A$与$A*A^T$具有相同的秩:
+若$A^\mathrm{T}Ax=0 $ ，则 $x^\mathrm{T}A^\mathrm{T}Ax=0 $，$(Ax)^\mathrm{T}Ax=0$ \quad $\Longrightarrow$ \quad $A*x=0$
 
-\quad
-3)若$A*A^T$有特征向量$x$,且相应的特征值为$\lambda$,那么$A^Tx$为$A^T*A$的特征向量，并且相应的特征值同为$\lambda$:
+综上所述，$Ax=0$与$A^\mathrm{T}Ax=0$通解 \quad $\Longrightarrow$ \quad $r(A)=r(A^\mathrm{T}A)$
 
-\section{程序实现}
+同理可得$r(A)=r(AA^\mathrm{T})$。
 
+因此$r(AA^\mathrm{T})=r(A^\mathrm{T}A)$
+\newline
+
+2)$A^\mathrm{T}A$与$AA^\mathrm{T}$具有相同的特征值:
+
+$\left| AA^\mathrm{T}-\lambda E  \right|=0$ \quad $\Longrightarrow$   $\left| (A^\mathrm{T}A-\lambda E)^\mathrm{T}  \right|=0$
+\quad $\Longrightarrow$  $\left| A^\mathrm{T}A-\lambda E  \right|= 0$
+
+因此，$A^\mathrm{T}A$与$AA^\mathrm{T}$具有相同的特征值。
+ \quad
+ \newline
+ 
+ 3)若$AA^\mathrm{T}$有特征向量$x$,且相应的特征值为$\lambda$,那么$A^\mathrm{T}x$为$A^\mathrm{T}A$的特征向量，并且相应的特征值同为$\lambda$:
+
+ 已知$AA^\mathrm{T}x=\lambda x$,那么$A^\mathrm{T}A*A^\mathrm{T}x=A^\mathrm{T}*AA^\mathrm{T}x=A^\mathrm{T}*\lambda x$
+
+ 即$A^\mathrm{T}A*A^\mathrm{T}x=\lambda A^\mathrm{T} x$
+
+ 因此$A^\mathrm{T}x$为$A^\mathrm{T}A$的特征向量，并且相应的特征值同为$\lambda$。
+ 
+\begin{lstlisting}
+相应的matlab代码为：
+covMatT = A_norm * A_norm';
+% 计算 covMatT 的前 k 个特征值和特征向量
+[V D] = eigs(covMatT, k);
+% 得到协方差矩阵 (covMatT)' 相应的特征向量
+V = A_norm' * V;
+% 特征向量归一化为单位特征向量
+for i=1:k
+    V(:,i)=V(:,i)/norm(V(:,i));
+end
+% 线性变换（投影）将原矩阵降维至 k 维
+pcaA = A_norm * V;
+ \end{lstlisting}
+ 本程序取前20个特征向量，那么原样本数据的规模为153*36000，降维后的矩阵为153*20。即每幅图片由原来的36000个数据点降维至20个数据点，大大减少了数据量，使得SVM分类减少了难度。
+
+
+ \subsection{SVM分类}
+ 支持向量机是Vapnik提出的旨在改善传统神经网络学习方法的理论弱点（如结构的确定靠试验试凑，没有理论依据)，最先从最优分类面问题提出了支持向量机网络，目前它可用在模式识别、数据挖掘等方面。
+
+ 由于经典的SVM算法只支持二分类，而人脸识别是多分类问题。用它来实现人脸识别就必须增加它的结构以实现多分类。基本策略有2种：
+
+ 1) “一对多策略”：为每个类别构建一个分类器，将该类的数据确定为正样本，将其它类的数据统一划分为负样本加以训练。
+ 
+ 2) “一对一策略”：为每两个类别中间构建一个分类器，那么解决K分类问题就需要$K(K-1)/2$个分类器。
+
+ 
+ 本程序使用的是“一对多策略”，任意两个不同人之间用一个SVM分类器来进行分类，当识别人脸的时候就将人脸数据放到每个分类器中进行分类，每个分类器一票进行投票，投票数最多的那个人就被认为是最终所识别的那一个。如图\ref{fig:msvm}所示就是一个三分类SVM结构。
+ 
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics{../Picture/tree_class.jpg}
+  \caption{多分类SVM结构图}
+  \label{fig:msvm}
+\end{figure}
+
+\newpage
 \section{结果分析}
 
-
-
-
-
-
+\begin{figure}[ht]
+\begin{minipage}{0.3\linewidth}
+\centerline{\includegraphics[width=4.5cm]{../Picture/composite_ORL.jpg}}
+\centerline{ORL人脸库样本}
+\end{minipage}
+\quad
+\begin{minipage}{0.3\linewidth}
+\centerline{\includegraphics[width=4.5cm]{../Picture/composite_yale.jpg}}
+\centerline{yale人脸库样本}
+\end{minipage}
+\quad
+\begin{minipage}{0.3\linewidth}
+\centerline{\includegraphics[width=4.5cm]{../Picture/composite_face95.jpg}}
+\centerline{face94人脸库样本}
+\end{minipage}
+\caption{人脸库样本展示}
+\end{figure}
 
 \end{document}
 
