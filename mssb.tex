@@ -18,6 +18,7 @@
 
 \maketitle
 
+\newpage
 \section{摘要}
 \label{sec:zhaiyao}
 
@@ -69,7 +70,7 @@
 %200个人脸样本 识别率为83.5\%。
 
 
-3)\quad Yale人脸库，该数据库包含15人每人11幅人脸像，其图像差异在于变化的人脸表情，是否戴有眼镜，不同的光照条件等。该库的特点就是光照变化显著，且有面部部分遮掩。在Yale人脸库中包含15个人的165幅图像
+3)\quad Yale人脸库，该数据库包含15人每人11幅人脸像，其图像差异在于变化的人脸表情，是否戴有眼镜，不同的光照条件等。该库的特点就是光照变化显著，且有面部部分遮掩。在Yale人脸库中包含15个人的165幅图像。
 
 %75个人脸样本 识别率85.333\%.
 
@@ -191,32 +192,165 @@ pcaA = A_norm * V;
 
 \newpage
 \section{结果及其分析}
+下面的主要内容为展示与分析实验结果，分为人脸库间的比较与图片库内部的比较来分析。结果中的主要数据项有：人脸库，训练与测试的人数（训练的人数与测试的人数一致，取每个人的前5张图片训练，取每个人的后5张图片用于测试），特征个数为通过PCA降为后剩余的特征数。PCA贡献率的算法为PCA贡献率=选取的特征向量对应特征值的和/所有特征向量对应特征值的和。准确率为测试总样本的准确率。
+
+
+\subsection{各人脸库结果分析}
+
+\subsubsection{ORL人脸库结果及分析}
+
+ORL人脸库的图片尺寸为112*92，样本如图\ref{pic:orl}所示，同一个人脸图片的差别主要是人脸的角度具有差异性：仰头，低头，左侧脸，有侧脸的差别。
 
 \begin{figure}[ht]
-\begin{minipage}{0.3\linewidth}
-\centerline{\includegraphics[width=4.5cm]{../Picture/composite_ORL.jpg}}
-\centerline{ORL人脸库样本}
-\end{minipage}
-\quad
-\begin{minipage}{0.3\linewidth}
-\centerline{\includegraphics[width=4.5cm]{../Picture/composite_yale.jpg}}
-\centerline{yale人脸库样本}
-\end{minipage}
-\quad
-\begin{minipage}{0.3\linewidth}
-\centerline{\includegraphics[width=4.5cm]{../Picture/composite_face95.jpg}}
-\centerline{face94人脸库样本}
-\end{minipage}
-\caption{人脸库样本展示}
-\label{pic:difpic}
+  \centering
+  \centerline{\includegraphics{../Picture/composite_ORL.jpg}}
+  \caption{ORl人脸库样本}
+\label{pic:orl}
 \end{figure}
-在\ref{pic:difpic}
+
+
+测试结果如表\ref{tab:orl}所示。
+
+
+\begin{table}[!htb]
+  \centering
+\begin{tabular}{|r|c|c|c|c|}
+\hline
+人脸库&人数&特征个数&PCA贡献率&准确率\\
+\hline
+ORL&    40&     30&     0.7891& 84.5\\
+ORL&    40&     40&     0.8289& 85.5\\
+ORL&    40&     50&     0.8587& 88\\
+ORL&    40&     60&     0.8814& 87.5\\
+  ORL&    40&     70&     0.9000& 88\\
+  \hline
+ORL&    15&     20&     0.8283  &85.5\\
+ORL&    15&     30&     0.8903  &96\\
+ORL&    15&     40&     0.9296  &97.333\\
+ORL&    15&     50&     0.9584  &97.333\\
+  \hline
+\end{tabular}
+  \caption{ORL测试结果}
+  \label{tab:orl}
+\end{table}
+
+可以看到一个图片的初始特征数为112*92，当训练与测试的人脸为40人时，经过PCA降维后30个特征就可以包含其中78.91\%的内容，70个特征就可以包含其中90\%的内容。开始随着特征数量的增加准确率逐步提高，当提取的特征数为50时，准确率为88\%，此后，结果收敛，增加特征值准确率不再升高。该算法识别率最高为88\%。当人脸数的人数减少到15人时，30个特征向量就包含89\%的内容，50个特征就可以包含其中95.84\%的内容，而准确率也高达97\%。。可以看出人数越少，特征值的贡献率越高，准确率越高。同一张人脸不同角度的变化对该算法识别率有较大影响。当人数变多时不同角度的人脸图片容易被误判。该算法在该人脸库上，人数越多，识别率越下降。
+
+\subsubsection{Yale人脸库结果及分析}
+
+yale的人脸库的图片尺寸为168*192，样本如图\ref{pic:yale}所示，同一个人的不同头像的差异主要表现在:有没有戴眼镜，表情，是否闭眼,与拍摄光线的差别。
+
+\begin{figure}[!htb]
+  \centering
+  \centerline{\includegraphics[width=10cm]{../Picture/composite_yale.jpg}}
+  \caption{YALE人脸库样本}
+\label{pic:yale}
+\end{figure}
+
+测试结果如表\ref{tab:yale}所示。
+\begin{table}[!htb]
+  \centering
+\begin{tabular}{|r|c|c|c|c|}
+\hline
+人脸库&人数&特征个数&PCA贡献率&准确率\\
+\hline
+yale&   15&     20&     0.8944& 85.333\\
+yale&   15&     30&     0.9428& 88\\
+yale&   15&     40&     0.9677& 90.6667\\
+yale&   15&     50&     0.9830& 90.6667\\
+  \hline
+\end{tabular}
+  \caption{yale测试结果}
+  \label{tab:yale}
+\end{table}
+
+由于yale数据库只有15个人的人脸图像，因此只测试了15个人的数据，从结果中可以看出PCA对该算法有比较好的压缩率，20个特征就可以包含其中89\%的内容，50个特征就可以包含其中98.3\%的内容。但准确率不那么令人满意。表情，眼睛，光线对人脸识别的影响很大。
+
+
+\subsubsection{face94人脸库结果及分析}
+
+face94的人脸库图片尺寸为200*180，face94人脸库样本如下图所示。同一个人的不同样本的不同差别非常小，人脸角度基本就没什么变化，只有面部表情的微小变化，如张嘴闭嘴，睁眼闭眼，左看右看等。
+
+\begin{figure}[htb]
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=2.5in]{../Picture/composite_face95.jpg}
+\caption{face94第一个人脸样本}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+\centering
+\includegraphics[width=2.5in]{../Picture/composite_face95_2.jpg}
+\caption{face94第二个人脸样本}
+\end{minipage}
+\end{figure}
+
+
+
+测试结果如表\ref{tab:face94}所示。
+\begin{table}[!htb]
+  \centering
+\begin{tabular}{|r|c|c|c|c|}
+\hline
+人脸库&人数&特征个数&PCA贡献率&准确率\\
+\hline
+face94 & 150&    20&     0.7476& 99.333\\
+  face94&  150&    10&     0.6483& 99.6\\
+  \hline
+face94&  100&    20&     0.7657& 99\\
+face94 & 100&    10&     0.6583& 99.8\\
+face94  &100&    5&      0.5430& 97\\
+face94 & 100&    3&      0.4586& 91.2\\
+  \hline
+\end{tabular}
+  \caption{face94测试结果}
+  \label{tab:face94}
+\end{table}
+
+从结果中可以看出pca对该算法有非常好的识别率，在有100人的人脸数时，3个特征向量就包含45\%的内容，而识别率却在91.2\%，10个特征向量包含65\%的内容，但准确率高达99.8\%。这个结果证明该算法对该人脸库的效果特别好。有如此高的准确率的重要原因是该人脸库类内的差距非常大，而类间的差距非常小。是需要极少的特征就可以将不同的人分清楚。
+
+
+\subsection{各人脸库综合分析}
+
+各人脸库的综合结果如表\ref{tab:zhonghe}所示：
+
+\begin{table}[!htb]
+  \centering
+\begin{tabular}{|r|c|c|c|c|}
+\hline
+人脸库&人数&特征个数&PCA贡献率&准确率\\
+\hline
+yale&   15&     20&     0.8944& 85.333\\
+yale&   15&     30&     0.9428& 88\\
+yale&   15&     40&     0.9677& 90.6667\\
+yale&   15&     50&     0.9830& 90.6667\\
+\hline
+ORL&    15&     20&     0.8283  &85.5\\
+ORL&    15&     30&     0.8903  &96\\
+ORL&    15&     40&     0.9296  &97.333\\
+ORL&    15&     50&     0.9584  &97.333\\
+\hline
+face94& 15&     10&     0.8315& 94.6667\\
+face94& 15&     20&     0.9474& 96\\
+face94& 15&     30&     0.9757& 98.667\\
+\hline
+\end{tabular}
+  \caption{各人脸库综合分析结果表}
+  \label{tab:zhonghe}
+\end{table}
+
+当把各个人脸库的人数都限定为15人的时候，我们就可以纵向进行比较各因素对人脸库的影响。综合看来该算法在face94上的表现最好，这也是理所当然的，因为各个人的图片差别很小（在训练集与测试集上），而不同人的图片差别非常大。ORL的表现次一点，光线，眼睛对等因素对该算法有一定的影响，但影响不够大。表现最差的是yale的人脸库，说明不同角度的图片对该算法有较大的影响。
+
+结合上面各个库的结果表,当人数增多的时候face94的表现没有上面差别都能很好的进行区分，ORL库人数增多时有较大的影响，当15人的时候ORl的最好识别率为97.333\%。当增加到40人时，最好的识别率只有88\%。人数越多，识别率越低。说明该算法对较小的数据时，有良好的表现，对较多的数据时，识别能力不足。
+
+\section{总结}
+
+本论文对PCA降维然后用SVM进行分类的人脸识别算法进行详细的讲述。通过对结果的分析，我们可以看到它在小样本数据时表现良好，并且运算速度快，对大样本或者各个不同角度的图片分类就不够准确。对比现在火热的神经网络方法的人脸识别，其对大样本的数据表现优秀，对小样本的数据表现不好，而且运算速度慢。
+
+现在是大数据时代，数据量不是问题，而硬件的发展也使得神经网络计算的越来越快。因此，现在的主流的人脸识别算法是基于神经网络的人脸识别，而本文中所述的算法基本已经淘汰。但通过该算法的实现，手动的完成了一个基本人脸识别算法，了解了一些基本的生物特征识别的知识，学习了人脸识别算法的思想。有很多有益的收获。
+
+愿生物特种识别能够更好的造福人类，让人人都享受科技的便利。
 
 \end{document}
-
-
-
-
 
 
 
